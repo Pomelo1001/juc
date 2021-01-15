@@ -69,16 +69,13 @@ public class TaskDisposeUtils {
         //启动多线程处理list中每个任务，每个任务的休眠时间为list中对应的数值
         TaskDisposeUtils.dispose(list, item -> {
             try {
-
                 long startTime = System.currentTimeMillis();
                 TimeUnit.SECONDS.sleep(item);
                 long endTime = System.currentTimeMillis();
                 System.out.println("任务" + item + ",执行完毕，耗时:" + (endTime - startTime));
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         });
         System.out.println(list + "中所有任务处理完毕!");
 
