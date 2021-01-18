@@ -24,6 +24,8 @@ public class Demo2 {
             }
             System.out.println(System.currentTimeMillis() + "执行结束");
         }, 2, TimeUnit.SECONDS);
+
+        scheduledExecutorService.shutdown();
     }
 
 }
