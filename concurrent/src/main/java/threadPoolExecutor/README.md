@@ -36,3 +36,24 @@ public ThreadPoolExecutor(int corePoolSize,
 |CallerRunsPolicy|在当前调用者的线程中运行任务，即随丢来的任务，由他自己去处理|
 |DiscardOldestPolicy|丢弃队列中最老的一个任务，即丢弃队列头部的一个任务，然后执行当前传入的任务|
 |DiscardPolicy|不处理，直接丢弃掉，方法内部为空|
+#### 线程池的创建方式
+- 阿里巴巴java开发手册中指出了线程资源必须通过线程池提供，不允许在应用中自行显示的创建线程，线程的创建更加规范，可以合理控制开辟线程的数量；另一方面线程的细节管理交给线程池处理，优化了资源的开销。
+- 线程池不允许使用Executors去创建，而要通过ThreadPoolExecutor方式
+- 性质不同任务可以用不同规模的线程池分开处理。CPU密集型任务应该尽可能小的线程，如配置cpu数量+1个线程的线程池。由于IO密集型任务并不是一直在执行任务，不能让cpu闲着，则应配置尽可能多的线程，如：cup数量*2。混合型的任务，如果可以拆分，将其拆分成一个CPU密集型任务和一个IO密集型任务，只要这2个任务执行的时间相差不是太大，那么分解后执行的吞吐量将高于串行执行的吞吐量。可以通过Runtime.getRuntime().availableProcessors()方法获取cpu数量。优先级不同任务可以对线程池采用优先级队列来处理，让优先级高的先执行。
+  使用队列的时候建议使用有界队列，有界队列增加了系统的稳定性，如果采用无界队列，任务太多的时候可能导致系统OOM，直接让系统宕机。
+- 调用shutdown方法之后，线程池将不再接口新任务，内部会将所有已提交的任务处理完毕，处理完毕之后，工作线程自动退出。
+  而调用shutdownNow方法后，线程池会将还未处理的（在队里等待处理的任务）任务移除，将正在处理中的处理完毕之后，工作线程自动退出
+### Executors框架
+Executors框架是Doug Lea的神作，通过这个框架，可以很容易的使用线程池高效地处理并行任务。
+Executors框架主要包含3部分的内容：
+- 任务相关的：包含被执行的任务要实现的接口：Runnable接口或Callable接口
+- 任务的执行相关的：包含任务执行机制的核心接口Executor，以及继承自Executor的ExecutorService接口。Executor框架中有两个关键的类实现了ExecutorService接口（ThreadPoolExecutor和ScheduleThreadPoolExecutor）
+- 异步计算结果相关的：包含接口Future和实现Future接口的FutureTask类
+Executor、ExecutorService、ThreadPoolExecutor、Executors、Future、Callable、FutureTask
+CompletableFuture、CompletionService、ExecutorCompletionService
+##### ThreadPoolExecutor类
+实现了ExecutorService接口中所有方法，该类也是我们经常要用到的
+##### ScheduleThreadPoolExecutor定时器
+ScheduleThreadPoolExecutor继承自ScheduleThreadPoolExecutor，他主要用来延迟执行任务，或者定时执行任务。功能和Timer类似，但是ScheduleThreadPoolExecutor更强大、更灵活一些。Timer后台是单个线程，而ScheduleThreadPoolExecutor可以在创建的时候指定多个线程
+##### quartz
+虽然ScheduledExecutorService对Timer进行了线程池的改进，但是依然无法满足复杂的定时任务调度场景。因此OpenSymphony提供了强大的开源任务调度框架：Quartz。Quartz是纯Java实现，而且作为Spring的默认调度框架，由于Quartz的强大的调度功能、灵活的使用方式、还具有分布式集群能力，可以说Quartz出马，可以搞定一切定时任务调度！
