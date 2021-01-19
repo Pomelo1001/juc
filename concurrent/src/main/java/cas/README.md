@@ -32,4 +32,27 @@ ABA问题：解决思路是使用版本号。在变量前面追加上版本号�
 ;如果CAS不成功，则会原地循环（自旋操作），如果长时间自旋会给CPU带来非常大的执行开销。并发量比较大的情况下，CAS成功概率可能比较低，可能会重试很多次才会成功
 
 #### 悲观锁和乐观锁的一些介绍及数据库乐观锁的一个常见示例
+略
 #### 使用java中的原子操作实现网站计数器功能
+demo3
+### unsafe类
+源码：
+```java
+public final class Unsafe {
+  // 单例对象
+  private static final Unsafe theUnsafe;
+
+  private Unsafe() {
+  }
+  @CallerSensitive
+  public static Unsafe getUnsafe() {
+    Class var0 = Reflection.getCallerClass();
+    // 仅在引导类加载器`BootstrapClassLoader`加载时才合法
+    if(!VM.isSystemDomainLoader(var0.getClassLoader())) {    
+      throw new SecurityException("Unsafe");
+    } else {
+      return theUnsafe;
+    }
+  }
+}
+```

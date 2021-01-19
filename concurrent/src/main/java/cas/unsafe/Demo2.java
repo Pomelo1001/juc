@@ -1,5 +1,8 @@
-package main.java.cas;
+package main.java.cas.unsafe;
 
+import sun.misc.Unsafe;
+
+import java.lang.reflect.Field;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -7,42 +10,34 @@ import java.util.concurrent.TimeUnit;
  * @version 1.1.0
  * @author：cp
  * @time：2021-1-19
- * @Description: CAS方案：并发访问更新计数器
- * 输出结果：main,耗时：96,count=1000
+ * @Description: unsafe类实现计数器
  */
 public class Demo2 {
-    //访问次数
-    static volatile int count = 0;
+    static Unsafe unsafe;
+    //用来记录网站访问量，每次访问+1
+    static int count;
+    //count在Demo.class对象中的地址偏移量
+    static long countOffset;
 
-    public static void request() throws InterruptedException {
-        //模拟请求页面浏览时间
-        TimeUnit.MILLISECONDS.sleep(5);
-        int expectCount;
-        do {
-            expectCount = getCount();
-        } while (!compareAndSwap(expectCount, expectCount + 1));
-    }
-
-    /**
-     * 返回当前的计数器值
-     * @return
-     */
-    public static int getCount() {
-        return count;
-    }
-
-    /**
-     * cas方法
-     * @param expect
-     * @param newCount
-     * @return
-     */
-    public static synchronized boolean compareAndSwap(int expect, int newCount) {
-        if (getCount() == expect) {
-            count = newCount;
-            return true;
+    static {
+        try {
+            Field field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            unsafe = (Unsafe) field.get(null);
+            Field countField = Demo2.class.getDeclaredField("count");
+            //获取count字段在Demo2中的内存地址的偏移量
+            countOffset = unsafe.staticFieldOffset(countField);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return false;
+    }
+
+    //模拟访问一次
+    public static void request() throws InterruptedException {
+        //模拟耗时5毫秒
+        TimeUnit.MILLISECONDS.sleep(5);
+        //对count原子加1
+        unsafe.getAndAddInt(Demo2.class, countOffset, 1);
     }
 
     public static void main(String[] args) throws InterruptedException {

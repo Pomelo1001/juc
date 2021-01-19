@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version 1.1.0
  * @author：cp
  * @time：2021-1-19
- * @Description: 通过juc中的类实现计数器
+ * @Description: JUC中的AtomicInteger工具实现计数器
  * 输出结果：main,耗时：99,count=1000
  */
 public class Demo3 {
