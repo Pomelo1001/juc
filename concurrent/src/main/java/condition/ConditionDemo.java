@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
  * @version 1.1.0
  * @author：caopu
  * @time：2021-1-15
- * @Description: synchronized中等待和唤醒线程示例
+ * @Description: synchronized中等待和唤醒线程示例,object的wait和notify方法必须要在同步代码块中才能调用
  */
 public class ConditionDemo {
     static Object lock = new Object();

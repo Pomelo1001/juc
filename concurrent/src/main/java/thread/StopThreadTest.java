@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 public class StopThreadTest {
 
     /**
-     * 通过interrupt()方式进行中断,同时运用了volatile，保证了flag变量在主线程与T1线程可见性
-     * sleep方法不会释放掉线程持有的锁，而wait()则会释放掉线程的锁
+     * 通过一个变量控制线程中断
+     *
      */
     public volatile static boolean flag = true;
 
