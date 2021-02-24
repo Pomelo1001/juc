@@ -11,7 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version 1.1.0
  * @author：cp
  * @time：2021-1-19
- * @Description: 目前java开发web系统一般有3层，controller、service、dao，请求到达controller，controller调用service，service调用dao，然后进行处理。
+ * @Description: 目前java开发web系统一般有3层，controller、service、dao，
+ * 请求到达controller，controller调用service，service调用dao，然后进行处理。
  */
 public class Demo1 {
     static AtomicInteger threadIndex = new AtomicInteger(1);
